@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>秘密基地</title>
+    <style>
+        body {
+            background-image: url('D:/夏季学期/系统原型大作业/灯光.jpg');
+            background-size: cover;
+            background-position: 0% 101%;
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
+        .box {
+            justify-content: center;
+            align-items: center;
+            background: rgb(85, 170, 255);
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgb(243, 243, 243);
+            display: flex;
+            flex-direction: column;
+            z-index: 3;
+             position: relative;
+        }
+        h3 {
+            font-family: "Trebuchet MS", Helvetica, sans-serif;
+            font-weight: 150;
+            font-style: italic;
+            color: white;
+            text-align: center;
+        }
+        #datetime {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        #login-button {
+            position: fixed;
+            right: 15px;
+            top: 25px;
+            color: rgb(0, 0, 0);
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        .login-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-form {
+            background: none;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: white;
+        }
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="date"] {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: rgb(192, 192, 192);
+        }
+        .nickname {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            color: black;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        /* 个人简介框 */
+        .personal-info {
+            position: fixed;
+            top: 12%;
+            left: 10px;
+            height: 560px;
+            width: 250px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .personal-info img {
+            width: 150px;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        .personal-info p {
+            font-size: 16px;
+            color: #333;
+        }
+         /* 固定 header 在顶部右侧 */
+        header {
+            position: fixed;
+            top:80px;
+            right:10px;
+            background-color:rgb(85, 170, 255);
+            padding: 10px;
+			border-radius:10px;
+            box-sizing: border-box;
+            z-index: 1;
+            
+        }
+
+        /* 设置导航栏样式 */
+        .navbar {
+            display: flex;
+            justify-content: flex-end; /* 使导航项靠右对齐 */
+        }
+
+        .navbar ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .navbar li {
+            margin: 0 10px; /* 设置列表项之间的间距 */
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        
+        }
+        /* 新增样式 */
+        .dynamic-panel1, .dynamic-panel2, .dynamic-panel3 {
+            position: absolute;
+            top: 100px;
+            right: 10px;
+            width: calc(78% - 20px);
+            height: 560px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            z-index: 1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+            display: none;
+        }
+
+        .dynamic-panel1.show, .dynamic-panel2.show, .dynamic-panel3.show {
+            opacity: 1;
+            display: block;
+            overflow-y: scroll;
+        }
+        input[type="image"] {
+			width: 50px;
+			height: auto;
+			top: 10px;
+			border-radius: 50%;
+		}
+		
+		.audio-player { 
+		 position: fixed; 
+		 bottom: 20px;
+		 right: 20px; 
+		 padding: 10px; border-radius: 10px;  
+		 z-index: 50;
+		 }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h3>“👑Caves of Karry And 小螃蟹🦀”</h3>
+        <p id="datetime"></p>
+        <button id="login-button">登录</button>
+        <div class="nickname" id="nickname"></div> <!-- 显示昵称的区域 -->
+    </div>
+    
+        <!-- 个人简介框 -->
+    <div class="personal-info">
+        <img src="D:\夏季学期\系统原型大作业\头像.jpg" alt="个人照片">
+        <p style="font-size: 15px; text-align: left;">
+			“日子难熬的时候，我会告诉我自己穿过风雨，我就能和你（们）相遇了。借着你们的光，我看到了不一样的世界。谢谢你们来我的演唱会！”
+		</p>
+        <table style="font-size:12px;">
+			<tr>
+				<th>本名</th>
+				<td>王俊凯</td>
+				<th>外文名</th>
+				<td>Karry</td>
+			</tr>
+			<tr>
+				<th>昵称</th>
+				<td>小凯、大哥、凯哥、凯皇</td>
+				<th>性别</th>
+				<td>男</td>
+			</tr>
+			<tr>
+				<th>民族</th>
+				<td>汉族</td>
+				<th>出生地区</th>
+				<td>中国重庆市九龙城区</td>
+			</tr>
+			<tr>
+				<th>出生日期</th>
+			    <td>1999年9月21日</td>
+			    <th>毕业院校</th>
+			    <td>北京电影学院</td>
+			</tr>
+			<tr>
+				<th>星座</th>
+			    <td>处女座</td>
+			    <th>代表作品</th>
+			    <td>万里归途、断桥、树读、生长、心引力</td>
+			</tr>
+			<tr>
+				<th>粉丝名称</th>
+			    <td>小螃蟹</td>
+			    <th>应援颜色</th>
+			    <td>蓝色</td>
+			</tr>
+			<tr>
+				<th>公益基金</th>
+			    <td>焕蓝梦想公益基金</td>
+			    <th>工作室</th>
+			    <td>王俊凯KarryWang工作室</td>
+			</tr>
+			
+		</table>
+    </div>
+    
+ <div class="dynamic-panel1">
+        <div class="dynamic-panel-content">
+			<h4>🫅🏻动*态</h4>
+			<table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>早在2020年《断·桥》拍摄期间，就听方励老师在做一个二战沉船救援的纪录电影，他调侃自己被迫成了导演。四年后他真的完成了《里斯本丸沉没》，很震撼、很感动、很真实，这部电影值得被很多人看到，去的时候得带纸巾，包哭的！</td>
+					<td >9/6</td>
+				</tr>
+			</table>
+			<hr>
+			<table
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>三餐不过斗米，何事向梦里求？心有大海，四面八方皆自由。电影《刺猬》正在热映，影院见。#电影刺猬片尾曲MV#</td>
+					<td>8/23</td>
+				</tr>
+				</table>
+				<hr>
+			<table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>#电影刺猬今日上映# 背靠着大海，面朝着未来，知己在身旁，梦在远方。#电影刺猬# 今日上映，影院见。 ​​​</td>
+					<td >8/23</tdalign="right">
+				</tr>
+			</table><hr>
+			<table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>不管是晴天雨天，都要带着我们相见那天的心情，开心过好每一天。 ​​​</td>
+					<td >8/21</tdalign="right">
+				</tr>
+			</table><hr>
+			<table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>如果感觉累了就拉上窗帘，关上手机，放空自己去睡觉，难熬的日子只需要更多的精力。 ​​​</td>
+					<td >8/20</tdalign="right">
+				</tr>
+			</table><hr>
+            <table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>又一年，把大家装进愿望里。祝我们的十一周年快乐！ ​​​ ​​​</td>
+					<td >8/6</tdalign="right">
+				</tr>
+			</table><hr>
+			<table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>小孩，你千万别变成我。#野孩子小孩版预告#//@新浪娱乐:他们拥有那样相似的童年，马亮却又不忍弟弟拥有与自己相似的命运。#野孩子小孩版预告##王俊凯新片角色独白# ​​​</td>
+					<td >6/21</tdalign="right">
+				</tr>
+			</table><hr>
+			<table>
+				<tr>
+					<td colspan="1" align="center"><img style="width: 60px; height: 60px; top: 10px; border-radius: 50%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>Karry</td>
+					<td>#电影野孩子定档暑期# 努力奔跑吧，即使生长在没有阳光的地方，7月12日，好好长大！//@新浪娱乐:如野草般生长，如家人般陪伴。7月12日，好好长大[心]#电影野孩子定档暑期# #王俊凯新片里捡小孩了# ​​​</td>
+					<td >6/15</tdalign="right">
+				</tr>
+			</table>
+        </div>
+ </div>
+			<div class="dynamic-panel2">
+        <div class="dynamic-panel-content">
+			<h4>🫅🏻S. H. A. R. E.🦀</h4>
+			<table>
+				<tr>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\横屏应援1.jpg"><br/>粉丝应援1</td>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\横屏应援2.jpg"><br/>粉丝应援2</td>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\皇冠1.jpg"><br/>皇冠1</td>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\皇冠2.jpg"><br/>皇冠2</td>
+				<td colspan="1" align="center"><img style="width: 300px; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\海边.jpg"><br/>海边</td>
+				</tr>
+				<tr>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\话筒皇冠.jpg"><br/>话筒皇冠1</td>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\话筒皇冠2.jpg"><br/>话筒皇冠2</td>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\竖屏应援1.jpg"><br/>竖屏应援1</td>
+				<td colspan="1" align="center"><img style="width: auto; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\皇冠背面.jpg"><br/>皇冠背面</td>
+				<td colspan="1" align="center"><img style="width: 300px; height: 200px; top: 10px; border-radius: 10%;" src="D:\夏季学期\系统原型大作业\舞台.jpg"><br/>皇冠背面</td>
+				
+				</tr>
+			</table>
+        </div>
+			</div>
+			<div class="dynamic-panel3" style="text-align: center;">
+	 <h4>🦀个人*中心</h4>
+        <div class="dynamic-panel-content3">
+			 <img style=" width: 100px; height: 100px ; " src="D:\夏季学期\系统原型大作业\个人头像.jpg">
+			 <p>小螃蟹</p>
+			 <p>洞穴号：1999室</p>
+			 <p>身份证号：M78199909215200x</p>
+			 <p>性别：女</p>
+			 <p>个人介绍：</p>
+			 <p>
+			 偶像对于粉丝的意义就在这里，他用最严肃的口气说着最温暖的话，只不过就想让我们知道我们的身后有他，他与我们同在。<br/>
+			 “爱是常觉亏欠”这句话对王俊凯和小螃蟹来说再合适不过了。<br/>
+			 “希望粉丝们能够吃好饭，过好自己的生活”“希望大家能好好照顾自己”。<br/>
+			 “觉得有时候他们的力量比我还要大”<br/>
+			 “所以我会特别心疼他们，但是他们也要能够照顾好自己再去做这样的事情”<br/>
+			 “我们虽然在舞台上和舞台下，但感觉大家的心都是站在舞台上，一块儿在歌唱”<br/>
+			 “希望大家都可以做一些能够让自己的生活也好、自己本身也好，更加美好的事情”<br/>
+			 小凯好像一直都是这样，一直特别心疼，一直希望我们能好好照顾好自己，希望我们过好自己的生活，因为他觉得我们有时候的力量比他还大，因为他知道我们的心是永远在一块的
+			 小凯说，粉丝是他的仰仗，可是啊，对小螃蟹来说，小凯是软肋，也是盔甲，是深藏心底的宝贝，也是抵抗世界的底气......
+			 </p>
+        </div></div>
+			<header>
+        <nav class="navbar">
+            <ul>
+                <li><a href="#" id="home-link">首页</a></li>
+                <li><a href="#" id="share-link">分享</a></li>
+                <li><a href="#" id="profile-link">个人中心</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+			<!-- 音频播放器 --> 
+	 <div class="audio-player"> 
+		 <audio controls> 
+			 <source src="D:\夏季学期\系统原型大作业\王俊凯+-+生长.mp3" type="audio/mpeg"> 您的浏览器不支持音频元素。 
+			 </audio> 
+			 </div> 
+<div class="login-overlay" id="login-overlay">
+        <div class="login-form">
+            <h3>用户登录</h3>
+            <form id="registerForm" onsubmit="return validateForm()">
+                <label for="username">登录账号</label>
+                <input type="text" id="username" name="username" required placeholder="以字母开头，只能包含字母和数字">
+
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required placeholder="至少8位，包含字母、数字及特殊字符">
+
+                <label for="confirm_password">确认密码</label>
+                <input type="password" id="confirm_password" name="confirm_password" required placeholder="请再次输入密码">
+
+                <label for="name">昵称</label>
+                <input type="text" id="name" name="name" required placeholder="请输入您的昵称">
+                
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required placeholder="请输入有效的邮箱地址">
+                <button type="submit"> 登录 </button>
+            </form>
+        </div>
+    </div>
+    <script>
+		document.addEventListener('DOMContentLoaded', function() {
+            var homePanel = document.querySelector('.dynamic-panel1');
+            var sharePanel = document.querySelector('.dynamic-panel2');
+            var profilePanel = document.querySelector('.dynamic-panel3');
+            var homeLink = document.getElementById('home-link');
+            var shareLink = document.getElementById('share-link');
+            var profileLink = document.getElementById('profile-link');
+
+            homePanel.classList.add('show');
+
+            homeLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                homePanel.classList.add('show');
+                sharePanel.classList.remove('show');
+                profilePanel.classList.remove('show');
+            });
+
+            shareLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                homePanel.classList.remove('show');
+                sharePanel.classList.add('show');
+                profilePanel.classList.remove('show');
+            });
+
+            profileLink.addEventListener('click', function(event) {
+                event.preventDefault();
+                homePanel.classList.remove('show');
+                sharePanel.classList.remove('show');
+                profilePanel.classList.add('show');
+            });
+        });
+        function updateDateTime() {
+            const now = new Date();
+            const formattedDate = now.toLocaleString();
+            document.getElementById('datetime').textContent = formattedDate;
+        }
+        updateDateTime(); 
+        setInterval(updateDateTime, 1000); 
+
+        document.getElementById('login-button').addEventListener('click', function() {
+            document.getElementById('login-overlay').style.display = 'flex';
+        });
+
+        function validateForm() {
+            const username = document.getElementById("username").value;
+            if (!/^[a-zA-Z][a-zA-Z0-9]*$/.test(username)) {
+                alert("登录账号必须以字母开头，只能包含字母和数字！");
+                document.getElementById("username").focus();
+                return false;
+            }
+
+            const password = document.getElementById("password").value;
+            if (!/^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$/.test(password)) {
+                alert("密码必须包含字母、数字和特殊字符，且至少8位！");
+                document.getElementById("password").focus();
+                return false;
+            }
+
+            const confirm_password = document.getElementById("confirm_password").value;
+            if (password !== confirm_password) {
+                alert("两次输入的密码不一致！");
+                document.getElementById("confirm_password").focus();
+                return false;
+            }
+
+            const email = document.getElementById("email").value;
+            if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+                alert("请输入有效的邮箱地址！");
+                document.getElementById("email").focus();
+                return false;
+            }
+
+            const nickname = document.getElementById("name").value;
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('nickname').textContent = `欢迎回来, ${nickname}!`;
+            document.getElementById('nickname').style.display = 'block';
+            document.getElementById('login-button').style.display = 'none'; 
+            return false; 
+        }
+    </script>
+</body>
+</html>
+
